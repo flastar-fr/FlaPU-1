@@ -1,0 +1,62 @@
+from .instruction_parser import split_instruction_line
+from .exceptions.preprocessing_exception import PreprocessingException
+from .preprocessor_utils import is_instruction_has_definition, replace_definition_value
+from .instruction_parser import parse_labels
+
+
+class Preprocessor:
+    @classmethod
+    def preprocess_lines(cls, instructions: list[str]) -> list[str]:
+        instructions = cls.remove_comments(instructions)
+        instructions = cls.associate_definitions(instructions)
+        cls.replace_labels(instructions)
+
+        return instructions
+
+    @classmethod
+    def associate_definitions(cls, instructions: list[str]) -> list[str]:
+        final_instructions: list[str] = []
+        definitions_table: dict[str, str] = {}
+
+        for instruction in instructions:
+            tokens: list[str] = split_instruction_line(instruction)
+            definition_in_instruction: str = is_instruction_has_definition(tokens, list(definitions_table.keys()))
+            if tokens[0] == "define":
+                if len(tokens) != 3:
+                    raise PreprocessingException(f"Invalid definition line {instruction}")
+                definitions_table[tokens[1]] = tokens[2]
+            elif definition_in_instruction != "":
+                new_instruction: str = replace_definition_value(tokens, definitions_table, definition_in_instruction)
+                final_instructions.append(new_instruction)
+            else:
+                final_instructions.append(instruction)
+
+        return final_instructions
+
+    @staticmethod
+    def replace_labels(instructions: list[str]) -> None:
+        labels_table: dict[str, int] = {}
+        labels_addresses: dict[str, int] = {}
+        parse_labels(instructions, labels_table, labels_addresses)
+
+        for label, address in labels_table.items():
+            instructions[address] = instructions[address].replace(f"{label} ", "")
+
+        for label, address in labels_addresses.items():
+            if label not in labels_table:
+                raise PreprocessingException(f"Label '{label}' is not defined.")
+            instructions[address] = instructions[address].replace(label, str(labels_table[label]))
+
+    @staticmethod
+    def remove_comments(instructions: list[str]) -> list[str]:
+        final_instructions: list[str] = []
+        for instruction in instructions:
+            comment_symbol_index: int = instruction.find("//")
+            if comment_symbol_index == -1:
+                final_instructions.append(instruction)
+            else:
+                pure_instruction: str = instruction[:comment_symbol_index]
+                if pure_instruction != "":
+                    final_instructions.append(pure_instruction.strip())
+
+        return final_instructions

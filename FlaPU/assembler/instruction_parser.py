@@ -1,0 +1,117 @@
+from .config import instructions_address_bits, registers_bits
+
+from .exceptions.immediate_value_exception import ImmediateOperandsException
+from .exceptions.register_operands_exception import RegisterOperandsException
+
+
+def split_instruction_line(line: str) -> list[str]:
+    stripped_line: str = line.strip()
+    return stripped_line.split(" ")
+
+
+def parse_labels(instructions: list[str],
+                 labels_table: dict[str, int],
+                 labels_addresses: dict[str, int]) -> tuple[dict[str, int], dict[str, int]]:
+    for address, instruction in enumerate(instructions):
+        tokens: list[str] = split_instruction_line(instruction)
+
+        parse_labels_line(tokens, labels_table, labels_addresses, address)
+
+    return labels_table, labels_addresses
+
+
+def parse_labels_line(tokens: list[str], labels_table: dict[str, int], labels_addresses: dict[str, int], address: int) -> None:
+    for i, token in enumerate(tokens):
+        if token.startswith("."):
+            if i == 0:
+                labels_table[token] = address
+            else:
+                labels_addresses[token] = address
+
+
+def is_register_correct(register_name: str, register_amount: int) -> bool:
+    is_valid_register_prefix: bool = register_name.startswith("r")
+    is_valid_register_amount: bool = register_name[1:].isnumeric()
+
+    if not (is_valid_register_prefix and is_valid_register_amount):
+        return False
+
+    return int(register_name[1:]) < register_amount
+
+def is_immediate_value_correct(immediate_value: str, amount_bits: int) -> bool:
+    valid_char: set[str] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+    if not all([value in valid_char for value in immediate_value]) or immediate_value == "":
+        return False
+
+    return int(immediate_value) < 2**amount_bits
+
+
+def are_all_registers(registers: list[str], register_amount: int) -> bool:
+    need_to_continue: bool = True
+    i: int = 0
+    while need_to_continue and i < len(registers):
+        if not is_register_correct(registers[i], register_amount):
+            need_to_continue = False
+
+        i += 1
+
+    return is_register_correct(registers[i - 1], register_amount)
+
+
+def are_operands_regs_correct(operands: list[str],
+                              amount_available_registers: int,
+                              amount_operands_needed: int,
+                              name: str) -> bool:
+    is_operand_amount_valid(operands, amount_operands_needed, name)
+
+    if not are_all_registers(operands, amount_available_registers):
+        raise RegisterOperandsException("Operands are not all classified as valid registers !")
+
+    return True
+
+
+def are_valid_reg_n_imm(operands: list[str], amount_available_registers: int, amount_operands_needed: int, name: str) -> bool:
+    is_operand_amount_valid(operands, amount_operands_needed, name)
+
+    if not is_register_correct(operands[0], amount_available_registers):
+        raise RegisterOperandsException("Register operand is not classified as a valid register !")
+
+    if not is_immediate_value_correct(operands[1], registers_bits):
+        raise ImmediateOperandsException("Immediate value operand is not valid !")
+
+    return True
+
+
+def are_valid_reg2_imm_opt(operands: list[str],
+                           name: str,
+                           amount_operands_needed: int,
+                           amount_available_registers: int) -> bool:
+    max_amount_operands_needed: int = 3
+
+    if not (amount_operands_needed <= len(operands) <= max_amount_operands_needed):
+        raise RegisterOperandsException(f"Operands amount for {name} instruction does not match "
+                                        f"{amount_operands_needed} minimum needed registers !")
+
+    are_all_registers(operands, amount_available_registers)
+    if len(operands) == max_amount_operands_needed:
+        if not is_immediate_value_correct(operands[2], 4):
+            raise ImmediateOperandsException("Immediate value operand is not valid !")
+
+    return True
+
+
+def is_address_operand_correct(operands: list[str], amount_operands_needed: int, name: str) -> bool:
+    is_operand_amount_valid(operands, amount_operands_needed, name)
+
+    if not is_immediate_value_correct(operands[0], instructions_address_bits):
+        raise ImmediateOperandsException("Operand is not a valid address !")
+
+    return True
+
+
+def is_operand_amount_valid(operands: list[str], amount_operands_needed: int, name: str) -> bool:
+    if len(operands) != amount_operands_needed:
+        raise RegisterOperandsException(f"Operands amount for {name} instruction does not match "
+                                        f"{amount_operands_needed} needed registers !")
+
+    return True
