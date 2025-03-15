@@ -26,7 +26,9 @@ class Assembler:
     def assemble_file(self, asm_file_path: str, machine_code_file_path: str) -> None:
         instructions: list[str] = extract_file_content(asm_file_path)
 
+        print(instructions)
         instructions = Preprocessor.preprocess_lines(instructions)
+        print(instructions)
 
         machine_code_instructions: list[str] = self._assemble_lines(instructions)
 

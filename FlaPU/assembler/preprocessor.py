@@ -1,3 +1,4 @@
+from .config import memory_mapped_addresses
 from .instruction_parser import split_instruction_line
 from .exceptions.preprocessing_exception import PreprocessingException
 from .preprocessor_utils import is_instruction_has_definition, replace_definition_value
@@ -16,7 +17,7 @@ class Preprocessor:
     @classmethod
     def associate_definitions(cls, instructions: list[str]) -> list[str]:
         final_instructions: list[str] = []
-        definitions_table: dict[str, str] = {}
+        definitions_table: dict[str, str] = memory_mapped_addresses.copy()
 
         for instruction in instructions:
             tokens: list[str] = split_instruction_line(instruction)

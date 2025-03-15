@@ -1,4 +1,4 @@
-from .config import instructions_address_bits, registers_bits
+from .config import instructions_address_bits, registers_bits, chars
 
 from .exceptions.immediate_value_exception import ImmediateOperandsException
 from .exceptions.register_operands_exception import RegisterOperandsException
@@ -38,12 +38,26 @@ def is_register_correct(register_name: str, register_amount: int) -> bool:
 
     return int(register_name[1:]) < register_amount
 
-def is_immediate_value_correct(immediate_value: str, amount_bits: int) -> bool:
-    valid_char: set[str] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
-    if not all([value in valid_char for value in immediate_value]) or immediate_value == "":
+def is_immediate_value_correct(immediate_value: str, amount_bits: int, signed: bool = False) -> bool:
+    is_single_quoted: bool = immediate_value.startswith("'") and immediate_value.endswith("'")
+    is_double_quoted: bool = immediate_value.startswith('"') and immediate_value.endswith('"')
+    if is_single_quoted or is_double_quoted:
+        if immediate_value[1:2] in chars:
+            return True
+
+    if not is_number(immediate_value, signed):
         return False
 
     return int(immediate_value) < 2**amount_bits
+
+
+def is_number(value: str, signed: bool = False) -> bool:
+    valid_digits: set[str] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"}
+
+    if signed and value[0] == "-":
+        return all([value in valid_digits for value in value[1:]]) and not value == ""
+
+    return all([value in valid_digits for value in value]) and not value == ""
 
 
 def are_all_registers(registers: list[str], register_amount: int) -> bool:
@@ -94,7 +108,7 @@ def are_valid_reg2_imm_opt(operands: list[str],
 
     are_all_registers(operands, amount_available_registers)
     if len(operands) == max_amount_operands_needed:
-        if not is_immediate_value_correct(operands[2], 4):
+        if not is_immediate_value_correct(operands[2], 4, True):
             raise ImmediateOperandsException("Immediate value operand is not valid !")
 
     return True

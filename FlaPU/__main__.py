@@ -14,6 +14,7 @@ mc_folder: str = "mc_programs"
 schem_folder: str = "schem_programs"
 
 
+
 def launch_program(program_name: str) -> None:
     full_as_file: str = f"{os.path.join(asm_folder, program_name)}.as"
     full_mc_file: str = f"{os.path.join(mc_folder, program_name)}.mc"

@@ -1,4 +1,5 @@
-from .config import assembled_name, instructions_address_bits
+from .config import assembled_name, instructions_address_bits, chars
+from .instruction_parser import is_number
 
 
 def assemble_reg_imm(name: str, operands: list[str]) -> str:
@@ -38,7 +39,7 @@ def assemble_reg2_imm_opt(name: str, operands: list[str]) -> str:
     assembled_line += get_register_binary(operands[0])
     assembled_line += get_register_binary(operands[1])
     if len(operands) == max_amount_operands_needed:
-        assembled_line += get_assembled_immediate(operands[2], 4)
+        assembled_line += get_assembled_immediate(operands[2], 4, True)
     else:
         assembled_line += "0000"
 
@@ -68,6 +69,15 @@ def get_register_binary(register_name: str) -> str:
     return normalize_length(binary_register_number, 4)
 
 
-def get_assembled_immediate(immediate_value: str, amount_bits: int) -> str:
-    binary_operand_value: str = convert_int_to_binary(int(immediate_value))
+def get_assembled_immediate(immediate_value: str, amount_bits: int, signed: bool = False) -> str:
+    if is_number(immediate_value, True):
+        int_operand_value: int = int(immediate_value)
+    else:
+        int_operand_value: int = chars[immediate_value[1:2]]
+
+    if signed and int_operand_value < 0:
+        return format(int_operand_value & (2**amount_bits - 1), f'0{amount_bits}b')
+
+    binary_operand_value: str = convert_int_to_binary(int_operand_value)
+
     return normalize_length(binary_operand_value, amount_bits)
