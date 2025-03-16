@@ -8,7 +8,9 @@ from .instruction_parser import parse_labels
 class Preprocessor:
     @classmethod
     def preprocess_lines(cls, instructions: list[str]) -> list[str]:
+        print(instructions)
         instructions = cls.clean_instructions(instructions)
+        print(instructions)
         instructions = cls.remove_comments(instructions)
         instructions = cls.associate_definitions(instructions)
         cls.replace_labels(instructions)
@@ -68,13 +70,17 @@ class Preprocessor:
     def clean_instructions(instructions: list[str]) -> list[str]:
         final_instructions: list[str] = []
         i: int = 0
+        last_got_added: int = -2
+
         while i < len(instructions):
             tokens: list[str] = split_instruction_line(instructions[i])
 
             if tokens[0][0] == "." and len(tokens) == 1:
                 label: str = tokens[0]
                 final_instructions.append(f"{label} {instructions[i + 1]}")
-            else:
+
+                last_got_added = i
+            elif last_got_added + 1 != i:
                 final_instructions.append(instructions[i])
 
             i += 1
