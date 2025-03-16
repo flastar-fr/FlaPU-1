@@ -24,7 +24,7 @@ def parse_labels_line(tokens: list[str], labels_table: dict[str, int], labels_ad
     for i, token in enumerate(tokens):
         if token.startswith("."):
             if i == 0:
-                labels_table[token] = address
+                labels_table[token] = address if len(tokens) != 1 else address + 1
             else:
                 labels_addresses[token] = address
 

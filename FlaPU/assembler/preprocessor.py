@@ -41,7 +41,11 @@ class Preprocessor:
         parse_labels(instructions, labels_table, labels_addresses)
 
         for label, address in labels_table.items():
-            instructions[address] = instructions[address].replace(f"{label} ", "")
+            label_in_single_line: bool = label in instructions[address]
+            if label_in_single_line:
+                instructions[address] = instructions[address].replace(f"{label} ", "")
+            else:
+                instructions.pop(address - 1)
 
         for label, address in labels_addresses.items():
             if label not in labels_table:
