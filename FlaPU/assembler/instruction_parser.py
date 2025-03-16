@@ -11,7 +11,7 @@ def split_instruction_line(line: str) -> list[str]:
 
 def parse_labels(instructions: list[str],
                  labels_table: dict[str, int],
-                 labels_addresses: dict[str, int]) -> tuple[dict[str, int], dict[str, int]]:
+                 labels_addresses: dict[str, list[int]]) -> tuple[dict[str, int], dict[str, list[int]]]:
     for address, instruction in enumerate(instructions):
         tokens: list[str] = split_instruction_line(instruction)
 
@@ -20,13 +20,16 @@ def parse_labels(instructions: list[str],
     return labels_table, labels_addresses
 
 
-def parse_labels_line(tokens: list[str], labels_table: dict[str, int], labels_addresses: dict[str, int], address: int) -> None:
+def parse_labels_line(tokens: list[str], labels_table: dict[str, int], labels_addresses: dict[str, list[int]], address: int) -> None:
     for i, token in enumerate(tokens):
         if token.startswith("."):
             if i == 0:
-                labels_table[token] = address if len(tokens) != 1 else address + 1
+                labels_table[token] = address
             else:
-                labels_addresses[token] = address
+                if token in labels_addresses:
+                    labels_addresses[token].append(address)
+                else:
+                    labels_addresses[token] = [address]
 
 
 def is_register_correct(register_name: str, register_amount: int) -> bool:

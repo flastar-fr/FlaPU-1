@@ -8,6 +8,7 @@ from .instruction_parser import parse_labels
 class Preprocessor:
     @classmethod
     def preprocess_lines(cls, instructions: list[str]) -> list[str]:
+        instructions = cls.clean_instructions(instructions)
         instructions = cls.remove_comments(instructions)
         instructions = cls.associate_definitions(instructions)
         cls.replace_labels(instructions)
@@ -37,20 +38,17 @@ class Preprocessor:
     @staticmethod
     def replace_labels(instructions: list[str]) -> None:
         labels_table: dict[str, int] = {}
-        labels_addresses: dict[str, int] = {}
+        labels_addresses: dict[str, list[int]] = {}
         parse_labels(instructions, labels_table, labels_addresses)
 
         for label, address in labels_table.items():
-            label_in_single_line: bool = label in instructions[address]
-            if label_in_single_line:
-                instructions[address] = instructions[address].replace(f"{label} ", "")
-            else:
-                instructions.pop(address - 1)
+            instructions[address] = instructions[address].replace(f"{label} ", "")
 
-        for label, address in labels_addresses.items():
+        for label, addresses in labels_addresses.items():
             if label not in labels_table:
                 raise PreprocessingException(f"Label '{label}' is not defined.")
-            instructions[address] = instructions[address].replace(label, str(labels_table[label]))
+            for address in addresses:
+                instructions[address] = instructions[address].replace(label, str(labels_table[label]))
 
     @staticmethod
     def remove_comments(instructions: list[str]) -> list[str]:
@@ -63,5 +61,22 @@ class Preprocessor:
                 pure_instruction: str = instruction[:comment_symbol_index]
                 if pure_instruction != "":
                     final_instructions.append(pure_instruction.strip())
+
+        return final_instructions
+
+    @staticmethod
+    def clean_instructions(instructions: list[str]) -> list[str]:
+        final_instructions: list[str] = []
+        i: int = 0
+        while i < len(instructions):
+            tokens: list[str] = split_instruction_line(instructions[i])
+
+            if tokens[0][0] == "." and len(tokens) == 1:
+                label: str = tokens[0]
+                final_instructions.append(f"{label} {instructions[i + 1]}")
+            else:
+                final_instructions.append(instructions[i])
+
+            i += 1
 
         return final_instructions
