@@ -8,8 +8,8 @@ from .instruction_parser import parse_labels
 class Preprocessor:
     @classmethod
     def preprocess_lines(cls, instructions: list[str]) -> list[str]:
-        instructions = cls.clean_instructions(instructions)
         instructions = cls.remove_comments(instructions)
+        instructions = cls.clean_instructions(instructions)
         instructions = cls.associate_definitions(instructions)
         cls.replace_labels(instructions)
 
