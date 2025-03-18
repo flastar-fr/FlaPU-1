@@ -45,7 +45,7 @@ def is_immediate_value_correct(immediate_value: str, amount_bits: int, signed: b
     is_single_quoted: bool = immediate_value.startswith("'") and immediate_value.endswith("'")
     is_double_quoted: bool = immediate_value.startswith('"') and immediate_value.endswith('"')
     if is_single_quoted or is_double_quoted:
-        if immediate_value[1:2] in chars:
+        if immediate_value[1:2].upper() in chars:
             return True
 
     if not is_number(immediate_value, signed):

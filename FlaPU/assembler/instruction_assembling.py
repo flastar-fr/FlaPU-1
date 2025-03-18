@@ -73,7 +73,7 @@ def get_assembled_immediate(immediate_value: str, amount_bits: int, signed: bool
     if is_number(immediate_value, True):
         int_operand_value: int = int(immediate_value)
     else:
-        int_operand_value: int = chars[immediate_value[1:2]]
+        int_operand_value: int = chars[immediate_value[1:2].upper()]
 
     if signed and int_operand_value < 0:
         return format(int_operand_value & (2**amount_bits - 1), f'0{amount_bits}b')
