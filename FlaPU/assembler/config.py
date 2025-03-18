@@ -21,7 +21,8 @@ assembled_name: dict[str, str] = {
 }
 
 flags: dict[str, str] = {"zero": "00", "notzero": "01", "carry": "10", "notcarry": "11",
-                         "=": "00", "!=": "01", ">=": "10", "<": "11"}
+                         "=": "00", "!=": "01", ">=": "10", "<": "11",
+                         "eq": "00", "ne": "01", "ge": "10", "lt": "11"}
 
 memory_mapped_addresses: dict[str, str] = {
     "pixel_x": "240",
