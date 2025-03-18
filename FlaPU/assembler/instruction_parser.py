@@ -63,6 +63,12 @@ def is_immediate_value_correct(immediate_value: str, amount_bits: int, signed: b
         if immediate_value[1:2].upper() in chars:
             return True
 
+    is_binary_number: bool = immediate_value.startswith("0b")
+    if is_binary_number:
+        are_all_one_zero = all([value in {"0", "1"} for value in immediate_value[2:]])
+
+        return are_all_one_zero
+
     if not is_number(immediate_value, signed):
         return False
 

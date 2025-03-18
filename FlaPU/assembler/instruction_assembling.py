@@ -72,6 +72,8 @@ def get_register_binary(register_name: str) -> str:
 def get_assembled_immediate(immediate_value: str, amount_bits: int, signed: bool = False) -> str:
     if is_number(immediate_value, True):
         int_operand_value: int = int(immediate_value)
+    elif immediate_value.startswith("0b"):
+        return normalize_length(immediate_value[2:], amount_bits)
     else:
         int_operand_value: int = chars[immediate_value[1:2].upper()]
 
