@@ -7,7 +7,7 @@ from assembler.assembler import Assembler
 from schematic.schematic import create_schematic
 
 
-default_program: str = "test"
+default_program: str = "example_program"
 
 asm_folder: str = "asm_programs"
 mc_folder: str = "mc_programs"

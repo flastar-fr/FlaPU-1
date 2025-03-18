@@ -6,7 +6,22 @@ from .exceptions.register_operands_exception import RegisterOperandsException
 
 def split_instruction_line(line: str) -> list[str]:
     stripped_line: str = line.strip()
-    return stripped_line.split(" ")
+
+    tokens: list[str] = stripped_line.split(" ")
+    final_tokens: list[str] = []
+
+    i = 0
+    while i < len(tokens):
+        token: str = tokens[i]
+        if token not in {"'", '"'}:
+            final_tokens.append(token)
+        else:
+            final_tokens.append("' '")
+            i += 1
+
+        i += 1
+
+    return final_tokens
 
 
 def parse_labels(instructions: list[str],
