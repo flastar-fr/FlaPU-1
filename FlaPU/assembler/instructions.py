@@ -386,6 +386,42 @@ class MOVInstruction(Instruction):
                                          self.name)
 
 
+class LSHInstruction(Instruction):
+    amount_operands_needed: int = 2
+    name: str = "LSH"
+
+    def __init__(self, operands: list[str]):
+        super().__init__(operands)
+
+    def assemble(self) -> str:
+        add_instruction: ADDInstruction = ADDInstruction([self.operands[0], self.operands[0], self.operands[1]])
+        return add_instruction.assemble()
+
+    def are_operands_correct(self, amount_available_registers: int) -> bool:
+        return are_operands_regs_correct(self.operands,
+                                         amount_available_registers,
+                                         self.amount_operands_needed,
+                                         self.name)
+
+
+class NOTInstruction(Instruction):
+    amount_operands_needed: int = 2
+    name: str = "NOT"
+
+    def __init__(self, operands: list[str]):
+        super().__init__(operands)
+
+    def assemble(self) -> str:
+        nor_instruction: NORInstruction = NORInstruction([self.operands[0], "r0", self.operands[1]])
+        return nor_instruction.assemble()
+
+    def are_operands_correct(self, amount_available_registers: int) -> bool:
+        return are_operands_regs_correct(self.operands,
+                                         amount_available_registers,
+                                         self.amount_operands_needed,
+                                         self.name)
+
+
 available_instructions: dict[str, Type[Instruction]] = {"NOP": NOPInstruction, "HLT": HLTInstruction,
                                                         "ADD": ADDInstruction, "SUB": SUBInstruction,
                                                         "NOR": NORInstruction, "AND": ANDInstruction,
@@ -395,4 +431,5 @@ available_instructions: dict[str, Type[Instruction]] = {"NOP": NOPInstruction, "
                                                         "JMP": JMPInstruction, "BRH": BRHInstruction,
                                                         "CMP": CMPInstruction, "CAL": CALInstruction,
                                                         "RET": RETInstruction, "LOD": LODInstruction,
-                                                        "STR": STRInstruction, "MOV": MOVInstruction}
+                                                        "STR": STRInstruction, "MOV": MOVInstruction,
+                                                        "LSH": LSHInstruction, "NOT": NOTInstruction}
