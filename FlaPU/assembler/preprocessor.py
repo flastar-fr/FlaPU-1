@@ -23,7 +23,7 @@ class Preprocessor:
         for instruction in instructions:
             tokens: list[str] = split_instruction_line(instruction)
             definition_in_instruction: str = is_instruction_has_definition(tokens, list(definitions_table.keys()))
-            if tokens[0] == "define":
+            if tokens[0].lower() == "define":
                 if len(tokens) != 3:
                     raise PreprocessingException(f"Invalid definition line {instruction}")
                 definitions_table[tokens[1]] = tokens[2]
