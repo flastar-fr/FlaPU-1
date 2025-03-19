@@ -36,15 +36,19 @@ def parse_labels(instructions: list[str],
 
 
 def parse_labels_line(tokens: list[str], labels_table: dict[str, int], labels_addresses: dict[str, list[int]], address: int) -> None:
+    before_instruction: bool = True
     for i, token in enumerate(tokens):
-        if token.startswith("."):
-            if i == 0:
+        is_a_label: bool = token.startswith(".")
+        if is_a_label:
+            if before_instruction:
                 labels_table[token] = address
             else:
                 if token in labels_addresses:
                     labels_addresses[token].append(address)
                 else:
                     labels_addresses[token] = [address]
+        else:
+            before_instruction = False
 
 
 def is_register_correct(register_name: str, register_amount: int) -> bool:

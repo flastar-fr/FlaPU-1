@@ -74,8 +74,15 @@ class Preprocessor:
             tokens: list[str] = split_instruction_line(instructions[i])
 
             if tokens[0][0] == "." and len(tokens) == 1:
-                label: str = tokens[0]
-                final_instructions.append(f"{label} {instructions[i + 1]}")
+                labels: list[str] = [tokens[0]]
+
+                next_instruction: list[str] = split_instruction_line(instructions[i + 1])
+                while next_instruction[0][0] == "." and len(next_instruction) == 1:
+                    labels.append(next_instruction[0])
+                    i += 1
+                    next_instruction: list[str] = split_instruction_line(instructions[i + 1])
+
+                final_instructions.append(f"{' '.join(labels)} {instructions[i + 1]}")
 
                 last_got_added = i
             elif last_got_added + 1 != i:
