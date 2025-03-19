@@ -265,7 +265,7 @@ class BRHInstruction(Instruction):
 
     def assemble(self) -> str:
         base_instruction_assembled: str = assembled_name[self.name]
-        binary_flag: str = flags[self.operands[0]]
+        binary_flag: str = flags[self.operands[0].lower()]
         binary_address_value: str = convert_int_to_binary(int(self.operands[1]))
         binary_operand_value_normalized: str = normalize_length(binary_address_value, instructions_address_bits)
         assembled_line: str = f"{base_instruction_assembled}{binary_flag}{binary_operand_value_normalized}"
@@ -275,7 +275,7 @@ class BRHInstruction(Instruction):
     def are_operands_correct(self, amount_available_registers: int) -> bool:
         is_operand_amount_valid(self.operands, self.amount_operands_needed, self.name)
 
-        if self.operands[0] not in flags:
+        if self.operands[0].lower() not in flags:
             raise FlagException(f"Operand {self.operands[0]} is not a valid flag !")
 
         if not is_immediate_value_correct(self.operands[1], instructions_address_bits):
