@@ -79,7 +79,7 @@ class Preprocessor:
 
                 last_got_added = i
             elif last_got_added + 1 != i:
-                final_instructions.append(instructions[i])
+                final_instructions.append(" ".join(tokens))
 
             i += 1
 

@@ -7,7 +7,7 @@ from .exceptions.register_operands_exception import RegisterOperandsException
 def split_instruction_line(line: str) -> list[str]:
     stripped_line: str = line.strip()
 
-    tokens: list[str] = stripped_line.split(" ")
+    tokens: list[str] = stripped_line.split()
     final_tokens: list[str] = []
 
     i = 0
