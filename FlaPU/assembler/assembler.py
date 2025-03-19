@@ -48,7 +48,7 @@ class Assembler:
     def parse_line(line: str) -> Instruction:
         tokens: list[str] = split_instruction_line(line)
 
-        operation: str = tokens[0]
+        operation: str = tokens[0].upper()
         operation_operands: list[str] = tokens[1:]
 
         if operation not in available_instructions:
