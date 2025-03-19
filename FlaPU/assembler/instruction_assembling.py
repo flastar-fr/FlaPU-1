@@ -5,7 +5,7 @@ from .instruction_parser import is_number
 def assemble_reg_imm(name: str, operands: list[str]) -> str:
     base_instruction_assembled: str = assembled_name[name]
     binary_operand_receive: str = get_register_binary(operands[0])
-    binary_operand_value: str = get_assembled_immediate(operands[1], 8)
+    binary_operand_value: str = get_assembled_immediate(operands[1], 8, True)
     assembled_line: str = f"{base_instruction_assembled}{binary_operand_receive}{binary_operand_value}"
 
     return assembled_line

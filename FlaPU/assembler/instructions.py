@@ -368,6 +368,24 @@ class STRInstruction(Instruction):
                                       amount_available_registers)
 
 
+class MOVInstruction(Instruction):
+    amount_operands_needed: int = 2
+    name: str = "MOV"
+
+    def __init__(self, operands: list[str]):
+        super().__init__(operands)
+
+    def assemble(self) -> str:
+        add_instruction: ADDInstruction = ADDInstruction([self.operands[0], "r0", self.operands[1]])
+        return add_instruction.assemble()
+
+    def are_operands_correct(self, amount_available_registers: int) -> bool:
+        return are_operands_regs_correct(self.operands,
+                                         amount_available_registers,
+                                         self.amount_operands_needed,
+                                         self.name)
+
+
 available_instructions: dict[str, Type[Instruction]] = {"NOP": NOPInstruction, "HLT": HLTInstruction,
                                                         "ADD": ADDInstruction, "SUB": SUBInstruction,
                                                         "NOR": NORInstruction, "AND": ANDInstruction,
@@ -377,4 +395,4 @@ available_instructions: dict[str, Type[Instruction]] = {"NOP": NOPInstruction, "
                                                         "JMP": JMPInstruction, "BRH": BRHInstruction,
                                                         "CMP": CMPInstruction, "CAL": CALInstruction,
                                                         "RET": RETInstruction, "LOD": LODInstruction,
-                                                        "STR": STRInstruction}
+                                                        "STR": STRInstruction, "MOV": MOVInstruction}

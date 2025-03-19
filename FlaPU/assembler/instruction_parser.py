@@ -114,7 +114,7 @@ def are_valid_reg_n_imm(operands: list[str], amount_available_registers: int, am
     if not is_register_correct(operands[0], amount_available_registers):
         raise RegisterOperandsException("Register operand is not classified as a valid register !")
 
-    if not is_immediate_value_correct(operands[1], registers_bits):
+    if not is_immediate_value_correct(operands[1], registers_bits, True):
         raise ImmediateOperandsException("Immediate value operand is not valid !")
 
     return True
