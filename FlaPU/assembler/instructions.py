@@ -422,6 +422,24 @@ class NOTInstruction(Instruction):
                                          self.name)
 
 
+class NEGInstruction(Instruction):
+    amount_operands_needed: int = 2
+    name: str = "NEG"
+
+    def __init__(self, operands: list[str]):
+        super().__init__(operands)
+
+    def assemble(self) -> str:
+        sub_instruction: SUBInstruction = SUBInstruction(["r0"] + self.operands)
+        return sub_instruction.assemble()
+
+    def are_operands_correct(self, amount_available_registers: int) -> bool:
+        return are_operands_regs_correct(self.operands,
+                                         amount_available_registers,
+                                         self.amount_operands_needed,
+                                         self.name)
+
+
 available_instructions: dict[str, Type[Instruction]] = {"NOP": NOPInstruction, "HLT": HLTInstruction,
                                                         "ADD": ADDInstruction, "SUB": SUBInstruction,
                                                         "NOR": NORInstruction, "AND": ANDInstruction,
@@ -432,4 +450,5 @@ available_instructions: dict[str, Type[Instruction]] = {"NOP": NOPInstruction, "
                                                         "CMP": CMPInstruction, "CAL": CALInstruction,
                                                         "RET": RETInstruction, "LOD": LODInstruction,
                                                         "STR": STRInstruction, "MOV": MOVInstruction,
-                                                        "LSH": LSHInstruction, "NOT": NOTInstruction}
+                                                        "LSH": LSHInstruction, "NOT": NOTInstruction,
+                                                        "NEG": NEGInstruction}
