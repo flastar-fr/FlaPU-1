@@ -21,6 +21,7 @@ assembled_name: dict[str, str] = {
 }
 
 flags: dict[str, str] = {"zero": "00", "notzero": "01", "carry": "10", "notcarry": "11",
+                         "z": "00", "nz": "01", "c": "10", "nc": "11",
                          "=": "00", "!=": "01", ">=": "10", "<": "11",
                          "eq": "00", "ne": "01", "ge": "10", "lt": "11"}
 
