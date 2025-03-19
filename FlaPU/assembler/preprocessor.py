@@ -56,6 +56,9 @@ class Preprocessor:
         for instruction in instructions:
             comment_symbol_index: int = instruction.find("//")
             if comment_symbol_index == -1:
+                comment_symbol_index = instruction.find("#")
+
+            if comment_symbol_index == -1:
                 final_instructions.append(instruction)
             else:
                 pure_instruction: str = instruction[:comment_symbol_index]
